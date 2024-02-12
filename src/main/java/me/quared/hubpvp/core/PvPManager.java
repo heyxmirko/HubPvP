@@ -85,6 +85,11 @@ public class PvPManager {
 				meta.setLore(StringUtil.colorize(lore));
 			}
 
+			int customModelData = instance.getConfig().getInt("items." + name + ".custom_model_data", 0);
+			if (customModelData != 0) {
+				meta.setCustomModelData(customModelData);
+			}
+
 			List<String> enchantments = instance.getConfig().getStringList("items." + name + ".enchantments");
 			for (String enchString : enchantments) {
 				String[] parts = enchString.split(":");

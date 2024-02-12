@@ -55,6 +55,7 @@ items:
       - "&7Equip this sword to fight other players!"
     enchantments:
       - "sharpness:1"
+    custom_model_data: 484985
   helmet:
     material: DIAMOND_HELMET # Item to use as the helmet
     enchantments:

@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.swing.*;
@@ -26,7 +27,7 @@ public class ItemSlotChangeListener implements Listener {
 
 		if (!p.hasPermission("hubpvp.use")) return;
 
-		if (Objects.equals(held, pvpManager.getWeapon())) {
+		if (hasMatchingCustomModelData(held, pvpManager.getWeapon())) {
 			if (pvpManager.getPlayerState(p) == PvPState.DISABLING) pvpManager.setPlayerState(p, PvPState.ON);
 			if (pvpManager.getPlayerState(p) == PvPState.ENABLING) return;
 
@@ -43,7 +44,7 @@ public class ItemSlotChangeListener implements Listener {
 
 					public void run() {
 						time--;
-						if (pvpManager.getPlayerState(p) != PvPState.ENABLING || !held.isSimilar(pvpManager.getWeapon())) {
+						if (pvpManager.getPlayerState(p) != PvPState.ENABLING || !hasMatchingCustomModelData(held, pvpManager.getWeapon())) {
 							pvpManager.removeTimer(p);
 							cancel();
 						} else if (time == 0) {
@@ -69,7 +70,7 @@ public class ItemSlotChangeListener implements Listener {
 
 				public void run() {
 					time--;
-					if (pvpManager.getPlayerState(p) != PvPState.DISABLING || held != null && held.isSimilar(pvpManager.getWeapon())) {
+					if (pvpManager.getPlayerState(p) != PvPState.DISABLING || hasMatchingCustomModelData(held, pvpManager.getWeapon())) {
 						pvpManager.removeTimer(p);
 						cancel();
 					} else if (time == 0) {
@@ -90,4 +91,13 @@ public class ItemSlotChangeListener implements Listener {
 		}
 	}
 
+	private boolean hasMatchingCustomModelData(ItemStack item1, ItemStack item2) {
+		if (item1 == null || item2 == null) return false;
+		ItemMeta meta1 = item1.getItemMeta();
+		ItemMeta meta2 = item2.getItemMeta();
+		if (meta1 != null && meta2 != null && meta1.hasCustomModelData() && meta2.hasCustomModelData()) {
+			return meta1.getCustomModelData() == meta2.getCustomModelData();
+		}
+		return false;
+	}
 }
