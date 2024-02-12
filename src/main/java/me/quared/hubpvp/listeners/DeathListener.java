@@ -28,8 +28,8 @@ public class DeathListener implements Listener {
 
         int healthOnKill = instance.getConfig().getInt("health-on-kill");
 
-        e.setKeepInventory(true);
-        e.setKeepLevel(true);
+        //e.setKeepInventory(true);
+        //e.setKeepLevel(true);
 
         victim.getInventory().setHeldItemSlot(0);
 
