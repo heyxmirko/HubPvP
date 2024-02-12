@@ -20,7 +20,7 @@ public class DamageListener implements Listener {
 
 			if (instance.getConfig().getStringList("disabled-worlds").contains(world.getName())) e.setCancelled(true);
 
-			e.setCancelled(!pvpManager.isInPvP(damager) || !pvpManager.isInPvP(damaged));
+			//e.setCancelled(!pvpManager.isInPvP(damager) || !pvpManager.isInPvP(damaged));
 		}
 	}
 

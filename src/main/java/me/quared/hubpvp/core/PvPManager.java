@@ -4,6 +4,7 @@ import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.util.StringUtil;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -111,6 +112,7 @@ public class PvPManager {
 		player.getInventory().setBoots(getBoots());
 
 		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-enabled")));
+		player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 2.0F);
 	}
 
 	public void setPlayerState(Player p, PvPState state) {
@@ -139,6 +141,7 @@ public class PvPManager {
 		}
 
 		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-disabled")));
+		player.playSound(player.getLocation(), Sound.ENTITY_SHULKER_HURT_CLOSED, 0.5F, 1.0F);
 	}
 
 	public void disable() {

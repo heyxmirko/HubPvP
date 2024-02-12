@@ -4,6 +4,7 @@ import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.core.PvPManager;
 import me.quared.hubpvp.core.PvPState;
 import me.quared.hubpvp.util.StringUtil;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,6 +12,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import javax.swing.*;
 import java.util.Objects;
 
 public class ItemSlotChangeListener implements Listener {
@@ -50,6 +52,7 @@ public class ItemSlotChangeListener implements Listener {
 							cancel();
 						} else {
 							p.sendMessage(StringUtil.colorize(instance.getConfig().getString("lang.pvp-enabling").replaceAll("%time%", Integer.toString(time))));
+							p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 2.0F);
 						}
 					}
 				};
