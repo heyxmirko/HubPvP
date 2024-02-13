@@ -33,9 +33,9 @@ disabled-worlds:
 # --------------------------------------------------
 
 lang:
-  pvp-enabled: '&6&l>&r&a PvP enabled!'
-  pvp-enabling: '&aPvP enabling in %time% second(s).'
-  pvp-disabled: '&6&l>&r&c PvP disabled!'
+  pvp-enabled: '&e> &7Your &cPvP Mode &7has been &aactivated&7!'
+  pvp-enabling: '&7Your &cPvP Mode &7will activate in &e%time%'
+  pvp-disabled: '&e> &7Your &cPvP Mode &7has been &cdeactivated&7!'
   pvp-disabling: '&cPvP disabling in %time% second(s).'
   reloaded: '&aSuccessfully reloaded the HubPvP config!'
   killed: '&4%killer% &chas killed you.'
