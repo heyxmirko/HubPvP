@@ -124,6 +124,7 @@ public class PvPManager {
 		addPlayerToRegion(player.getUniqueId());
 		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-enabled")));
 		player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 2.0F);
+		player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1.0F, 1.0F);
 	}
 
 	public void setPlayerState(Player p, PvPState state) {
@@ -153,7 +154,8 @@ public class PvPManager {
 
 		removePlayerFromRegion(player.getUniqueId());
 		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-disabled")));
-		player.playSound(player.getLocation(), Sound.ENTITY_SHULKER_HURT_CLOSED, 0.5F, 1.0F);
+		player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1.F, 1.0F);
+
 	}
 
 	public void disable() {
