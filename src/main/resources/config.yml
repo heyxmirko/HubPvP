@@ -52,11 +52,12 @@ items:
     material: DIAMOND_SWORD # Item to use as the sword
     name: '&7> &#9e00ff&lP&#9321ff&lv&#8843ff&lP &#7d64ff&lS&#7286ff&lw&#67a7ff&lo&#5cc9ff&lr&#51eaff&ld &7<' # Name of the item
     lore: # Item description, shown when hovering over in inventory
-      - "&c&lWARNING&f:"
-      - "&c&l| &fEquipping this sword engages &9PvP &fand &9armor&f."
-      - "&c&l| &aSafe in spawn&f: lose hearts, not stuff."
-      - "&c&l| &cRisky in warzone/wild&f: lose everything,"
-      - "&c&l| &fincluding sword. Be careful."
+      - "&9&l| HOW IT WORKS?"
+      - "&9&l|"
+      - "&9&l| &fEquipping this sword engages &9PvP &fand &9armor&f."
+      - "&9&l| &aSafe in spawn&f: lose hearts, not stuff."
+      - "&9&l| &cRisky in warzone/wild&f: lose everything,"
+      - "&9&l| &fincluding sword. Be careful."
     enchantments:
       - "sharpness:1"
     custom_model_data: 484985
