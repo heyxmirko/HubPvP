@@ -50,9 +50,13 @@ items:
   weapon:
     slot: 9 # Sword slot inside the player's inventory
     material: DIAMOND_SWORD # Item to use as the sword
-    name: '&7> &#db86e6&lP&#da85d0&lv&#d984ba&lP &#d883a4&lS&#d8818d&lw&#d78077&lo&#d67f61&lr&#d57e4b&ld &7<' # Name of the item
+    name: '&7> &#9e00ff&lP&#9321ff&lv&#8843ff&lP &#7d64ff&lS&#7286ff&lw&#67a7ff&lo&#5cc9ff&lr&#51eaff&ld &7<' # Name of the item
     lore: # Item description, shown when hovering over in inventory
-      - "&7Equip this sword to fight other players!"
+      - "&c&lWARNING&f:"
+      - "&c&l| &fEquipping this sword engages &9PvP &fand &9armor&f."
+      - "&c&l| &aSafe in spawn&f: lose hearts, not stuff."
+      - "&c&l| &cRisky in warzone/wild&f: lose everything,"
+      - "&c&l| &fincluding sword. Be careful."
     enchantments:
       - "sharpness:1"
     custom_model_data: 484985
