@@ -47,6 +47,7 @@ public final class HubPvP extends JavaPlugin {
 		pm.registerEvents(new ItemSlotChangeListener(), this);
 		pm.registerEvents(new PlayerJoinListener(), this);
 		pm.registerEvents(new ProtectionListeners(), this);
+		pm.registerEvents(new SpellCastListener(), this);
 	}
 
 	private void registerCommands() {
