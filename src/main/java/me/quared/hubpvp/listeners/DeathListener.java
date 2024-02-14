@@ -11,6 +11,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DeathListener implements Listener {
 
@@ -18,34 +23,58 @@ public class DeathListener implements Listener {
     public void onDeath(PlayerDeathEvent e) {
         HubPvP instance = HubPvP.instance();
         PvPManager pvpManager = instance.pvpManager();
-
-        if (e.getEntity().getKiller() == null) return;
-
         Player victim = e.getEntity();
-        Player killer = victim.getKiller();
 
-        if (!pvpManager.isInPvP(victim) || !pvpManager.isInPvP(killer)) return;
-
-        int healthOnKill = instance.getConfig().getInt("health-on-kill");
-
-        //e.setKeepInventory(true);
-        //e.setKeepLevel(true);
-
-        victim.getInventory().setHeldItemSlot(0);
-
-        if (healthOnKill != -1) {
-            killer.setHealth(Math.min(killer.getHealth() + healthOnKill, killer.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
-            killer.sendMessage(StringUtil.colorize(instance.getConfig().getString("health-gained-message")
-                    .replace("%extra%", String.valueOf(healthOnKill)).replace("%killed%", victim.getDisplayName())));
-        }
-
+        // Always disable PvP for the victim, regardless of whether the killer exists
         pvpManager.disablePvP(victim);
 
-        victim.sendMessage(StringUtil.colorize(instance.getConfig().getString("lang.killed")).replace("%killer%", killer.getDisplayName()));
+        // Check drop for pvp armor
+        List<ItemStack> itemsToRemove = new ArrayList<>();
+        for (ItemStack item : e.getDrops()) {
+            if (item.hasItemMeta()) {
+                ItemMeta meta = item.getItemMeta();
+                if (meta.hasCustomModelData() && pvpManager.getArmorCustomModelData().contains(meta.getCustomModelData())) {
+                    itemsToRemove.add(item);
+                }
+            }
+        }
+        // Remove all matching items from the drops
+        e.getDrops().removeAll(itemsToRemove);
 
-        killer.sendMessage(
-                StringUtil.colorize(instance.getConfig().getString("lang.killed-other")).replace("%killed%", victim.getDisplayName()));
+        Player killer = victim.getKiller();
+        // Proceed only if both killer and victim are in PvP mode
+        if (killer != null && pvpManager.isInPvP(victim) && pvpManager.isInPvP(killer)) {
+            int healthOnKill = instance.getConfig().getInt("health-on-kill");
 
+            // Restore health to the killer if specified
+            if (healthOnKill != -1) {
+                double newHealth = Math.min(killer.getHealth() + healthOnKill, killer.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+                killer.setHealth(newHealth);
+                // Send a health-gained message to the killer
+                String healthGainedMessage = instance.getConfig().getString("health-gained-message")
+                        .replace("%extra%", String.valueOf(healthOnKill))
+                        .replace("%killed%", victim.getDisplayName());
+                killer.sendMessage(StringUtil.colorize(healthGainedMessage));
+            }
+
+            // Send kill messages
+            String killedMessage = instance.getConfig().getString("lang.killed")
+                    .replace("%killer%", killer.getDisplayName());
+            victim.sendMessage(StringUtil.colorize(killedMessage));
+
+            String killedOtherMessage = instance.getConfig().getString("lang.killed-other")
+                    .replace("%killed%", victim.getDisplayName());
+            killer.sendMessage(StringUtil.colorize(killedOtherMessage));
+        }
+
+        // Optionally, you can uncomment these if you decide to keep inventory and level on death
+        // e.setKeepInventory(true);
+        // e.setKeepLevel(true);
+
+        // Set the victim's selected inventory slot to 0 (first slot)
+        victim.getInventory().setHeldItemSlot(0);
+
+        // Clear the default death message
         e.setDeathMessage("");
     }
 

@@ -109,6 +109,15 @@ public class PvPManager {
 		return item;
 	}
 
+	public List<Integer> getArmorCustomModelData() {
+		List<Integer> list = new ArrayList<>();
+		list.add(Objects.requireNonNull(getHelmet().getItemMeta()).getCustomModelData());
+		list.add(Objects.requireNonNull(getChestplate().getItemMeta()).getCustomModelData());
+		list.add(Objects.requireNonNull(getLeggings().getItemMeta()).getCustomModelData());
+		list.add(Objects.requireNonNull(getBoots().getItemMeta()).getCustomModelData());
+		return list;
+	}
+
 	public void enablePvP(Player player) {
 		setPlayerState(player, PvPState.ON);
 
