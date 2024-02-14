@@ -65,9 +65,13 @@ items:
     material: DIAMOND_HELMET # Item to use as the helmet
     enchantments:
       - "protection:1"
+    custom_model_data: 484986
   chestplate:
     material: DIAMOND_CHESTPLATE # Item to use as the chestplate
+    custom_model_data: 484987
   leggings:
     material: DIAMOND_LEGGINGS # Item to use as the leggings
+    custom_model_data: 484988
   boots:
     material: DIAMOND_BOOTS # Item to use as the boots
+    custom_model_data: 484989
