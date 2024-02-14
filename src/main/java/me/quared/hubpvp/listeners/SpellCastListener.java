@@ -15,11 +15,21 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class SpellCastListener implements Listener {
 
     JavaPlugin plugin = JavaPlugin.getPlugin(HubPvP.class);
+
+    List<Material> noCollisionBlocks = new ArrayList<>();
+
+    public SpellCastListener() {
+        noCollisionBlocks.add(Material.AIR);
+        noCollisionBlocks.add(Material.WATER);
+        noCollisionBlocks.add(Material.LIGHT);
+    }
 
     @EventHandler
     public void onSpellCast(PlayerInteractEvent e) {
@@ -122,7 +132,7 @@ public class SpellCastListener implements Listener {
             private boolean checkCollision(Location location, Player caster) {
                 // Check for block collisions
                 Block block = location.getBlock();
-                if (block.getType() != Material.AIR && block.getType() != Material.WATER) {
+                if (!noCollisionBlocks.contains(block.getType())) {
                     Objects.requireNonNull(location.getWorld()).spawnParticle(Particle.LAVA, location, 10);
                     location.getWorld().playSound(location, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 1.0f, 0.5f);
                     return true;
