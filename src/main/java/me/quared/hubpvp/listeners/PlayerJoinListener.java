@@ -17,11 +17,11 @@ public class PlayerJoinListener implements Listener {
         Player p = e.getPlayer();
         PvPManager pvPManager = HubPvP.instance().pvpManager();
 
-
-        if (p.hasPermission("hubpvp.use") &&
+        // Now relaying on giving weapon by command /hubpvp giveWeapon
+        /*if (p.hasPermission("hubpvp.use") &&
                 !HubPvP.instance().getConfig().getStringList("disabled-worlds").contains(p.getWorld().getName())) {
             pvPManager.giveWeapon(p);
-        }
+        }*/
 
         pvPManager.getOldPlayerDataList().add(new OldPlayerData(p, p.getInventory().getArmorContents(), p.getAllowFlight()));
         pvPManager.setPlayerState(p, PvPState.OFF);

@@ -9,7 +9,7 @@ depend: [WorldGuard]
 commands:
   hubpvp:
     description: HubPvP core command.
-    permission: hubpvp.reload
+    permission: hubpvp.commands
 permissions:
   hubpvp.use:
     description: Use the HubPvP sword.
