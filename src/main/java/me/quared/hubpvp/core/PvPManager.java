@@ -4,7 +4,6 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import me.quared.hubpvp.HubPvP;
@@ -24,6 +23,7 @@ import java.util.*;
 
 public class PvPManager {
 
+	private final me.quared.hubpvp.core.RegionManager regionManager = new RegionManager();
 	private final Map<Player, PvPState> playerPvpStates;
 	private final Map<Player, BukkitRunnable> currentTimers;
 	private final List<OldPlayerData> oldPlayerDataList;
@@ -35,6 +35,7 @@ public class PvPManager {
 	private ItemStack weapon, helmet, chestplate, leggings, boots;
 
 	public PvPManager() {
+
 		playerPvpStates = new HashMap<>();
 		currentTimers = new HashMap<>();
 		oldPlayerDataList = new ArrayList<>();
@@ -130,7 +131,7 @@ public class PvPManager {
 		player.getInventory().setLeggings(getLeggings());
 		player.getInventory().setBoots(getBoots());
 
-		addPlayerToRegion(player.getUniqueId());
+		regionManager.addPlayerToRegion(player.getUniqueId());
 		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-enabled")));
 		player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 2.0F);
 		player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1.0F, 1.0F);
@@ -161,7 +162,7 @@ public class PvPManager {
 			player.setAllowFlight(oldPlayerData.canFly());
 		}
 
-		removePlayerFromRegion(player.getUniqueId());
+		regionManager.removePlayerFromRegion(player.getUniqueId());
 		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-disabled")));
 		player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1.F, 1.0F);
 
@@ -199,41 +200,4 @@ public class PvPManager {
 		}
 		getCurrentTimers().remove(p);
 	}
-
-	private void addPlayerToRegion(UUID playerUUID) {
-		WorldGuard worldGuard = WorldGuard.getInstance();
-		RegionContainer container = worldGuard.getPlatform().getRegionContainer();
-		World world = BukkitAdapter.adapt(Bukkit.getWorld("world")); // Convert Bukkit world to WorldEdit world
-		RegionManager regions = container.get(world);
-		if (regions == null) return; // Always check if regions is null
-		ProtectedRegion spawnRegion = regions.getRegion("spawn");
-		if (spawnRegion == null) return; // Check if the spawnRegion exists
-
-		spawnRegion.getMembers().addPlayer(playerUUID);
-
-		try {
-			regions.save();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void removePlayerFromRegion(UUID playerUUID) {
-		WorldGuard worldGuard = WorldGuard.getInstance();
-		RegionContainer container = worldGuard.getPlatform().getRegionContainer();
-		World world = BukkitAdapter.adapt(Bukkit.getWorld("world")); // Convert Bukkit world to WorldEdit world
-		RegionManager regions = container.get(world);
-		if (regions == null) return; // Always check if regions is null
-		ProtectedRegion spawnRegion = regions.getRegion("spawn");
-		if (spawnRegion == null) return; // Check if the spawnRegion exists
-
-		spawnRegion.getMembers().removePlayer(playerUUID);
-
-		try {
-			regions.save();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 }
