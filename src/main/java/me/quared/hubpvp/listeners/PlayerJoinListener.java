@@ -23,7 +23,7 @@ public class PlayerJoinListener implements Listener {
             pvPManager.giveWeapon(p);
         }*/
 
-        pvPManager.getOldPlayerDataList().add(new OldPlayerData(p, p.getInventory().getArmorContents(), p.getAllowFlight()));
+        //pvPManager.getOldPlayerDataList().add(new OldPlayerData(p, p.getInventory().getArmorContents(), p.getAllowFlight()));
         pvPManager.setPlayerState(p, PvPState.OFF);
     }
 

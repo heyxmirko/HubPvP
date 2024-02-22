@@ -6,7 +6,9 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.util.profile.util.UUIDs;
 import me.quared.hubpvp.HubPvP;
+import me.quared.hubpvp.util.DebugLogger;
 import me.quared.hubpvp.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -26,10 +28,13 @@ public class PvPManager {
 	private final me.quared.hubpvp.core.RegionManager regionManager = new RegionManager();
 	private final Map<Player, PvPState> playerPvpStates;
 	private final Map<Player, BukkitRunnable> currentTimers;
-	private final List<OldPlayerData> oldPlayerDataList;
+	private final Map<UUID, OldPlayerData> oldPlayerDataMap;
 
-	public List<OldPlayerData> getOldPlayerDataList() {
-		return this.oldPlayerDataList;
+	DebugLogger debugLogger = new DebugLogger();
+
+
+	public Map<UUID, OldPlayerData> getOldPlayerDataMap() {
+		return this.oldPlayerDataMap;
 	}
 
 	private ItemStack weapon, helmet, chestplate, leggings, boots;
@@ -38,7 +43,7 @@ public class PvPManager {
 
 		playerPvpStates = new HashMap<>();
 		currentTimers = new HashMap<>();
-		oldPlayerDataList = new ArrayList<>();
+		oldPlayerDataMap = new HashMap<>();
 
 		loadItems();
 	}
@@ -122,8 +127,8 @@ public class PvPManager {
 	public void enablePvP(Player player) {
 		setPlayerState(player, PvPState.ON);
 
-		if (getOldData(player) != null) getOldPlayerDataList().remove(getOldData(player));
-		getOldPlayerDataList().add(new OldPlayerData(player, player.getInventory().getArmorContents(), player.getAllowFlight()));
+		if (getOldData(player) != null) getOldPlayerDataMap().remove(player.getUniqueId());
+		getOldPlayerDataMap().put(player.getUniqueId(), new OldPlayerData(player, player.getInventory().getArmorContents(), player.getAllowFlight()));
 
 		player.setAllowFlight(false);
 		player.getInventory().setHelmet(getHelmet());
@@ -141,8 +146,8 @@ public class PvPManager {
 		playerPvpStates.put(p, state);
 	}
 
-	public @Nullable OldPlayerData getOldData(Player p) {
-		return oldPlayerDataList.stream().filter(data -> data.player().equals(p)).findFirst().orElse(null);
+	public @Nullable OldPlayerData getOldData(Player player) {
+		return oldPlayerDataMap.get(player.getUniqueId());
 	}
 
 	public void removePlayer(Player p) {
@@ -154,13 +159,21 @@ public class PvPManager {
 		setPlayerState(player, PvPState.OFF);
 
 		OldPlayerData oldPlayerData = getOldData(player);
+
 		if (oldPlayerData != null) {
 			player.getInventory().setHelmet(oldPlayerData.armor()[3] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[3]);
 			player.getInventory().setChestplate(oldPlayerData.armor()[2] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[2]);
 			player.getInventory().setLeggings(oldPlayerData.armor()[1] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[1]);
 			player.getInventory().setBoots(oldPlayerData.armor()[0] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[0]);
 			player.setAllowFlight(oldPlayerData.canFly());
+
+			debugLogger.log(player.getName() + " " + oldPlayerData.getArmorString());
+			oldPlayerDataMap.remove(player.getUniqueId());
+		} else {
+			debugLogger.log(player.getName() + " " +"oldPlayerData is null");
 		}
+
+
 
 		regionManager.removePlayerFromRegion(player.getUniqueId());
 		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-disabled")));
