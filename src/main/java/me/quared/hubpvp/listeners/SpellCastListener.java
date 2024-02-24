@@ -50,7 +50,7 @@ public class SpellCastListener implements Listener {
                             return;
                         }
                         castSpell(player);
-                        player.setCooldown(Material.DIAMOND_SWORD, 300);
+                        player.setCooldown(Material.DIAMOND_SWORD, 200);
                     }
                     if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                         Block clickedBlock = e.getClickedBlock();
@@ -80,8 +80,8 @@ public class SpellCastListener implements Listener {
     public void castSpell(Player player) {
         final Location startLocation = player.getEyeLocation();
         final Vector direction = startLocation.getDirection().normalize();
-        final double speedPerTick = 15.0 / 20.0; // 15 blocks per second, converted to blocks per tick
-        final double maxDistance = 15.0;
+        final double speedPerTick = 30.0 / 20.0; // 15 blocks per second, converted to blocks per tick
+        final double maxDistance = 20.0;
         final Color purpleColor = Color.fromRGB(180, 0, 250); // Corrected RGB values for purple
         final Color darkGrayColor = Color.fromRGB(40, 40, 40); // Corrected RGB values for purple
         final Particle.DustOptions dustOptionPurple= new Particle.DustOptions(purpleColor, 1.0F);// Options for particle color and size

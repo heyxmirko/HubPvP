@@ -1,16 +1,7 @@
 package me.quared.hubpvp.core;
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.world.World;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
-import com.sk89q.worldguard.util.profile.util.UUIDs;
 import me.quared.hubpvp.HubPvP;
-import me.quared.hubpvp.util.DebugLogger;
 import me.quared.hubpvp.util.StringUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -29,8 +20,6 @@ public class PvPManager {
 	private final Map<Player, PvPState> playerPvpStates;
 	private final Map<Player, BukkitRunnable> currentTimers;
 	private final Map<UUID, OldPlayerData> oldPlayerDataMap;
-
-	DebugLogger debugLogger = new DebugLogger();
 
 
 	public Map<UUID, OldPlayerData> getOldPlayerDataMap() {
@@ -167,12 +156,8 @@ public class PvPManager {
 			player.getInventory().setBoots(oldPlayerData.armor()[0] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[0]);
 			player.setAllowFlight(oldPlayerData.canFly());
 
-			debugLogger.log(player.getName() + " " + oldPlayerData.getArmorString());
 			oldPlayerDataMap.remove(player.getUniqueId());
-		} else {
-			debugLogger.log(player.getName() + " " +"oldPlayerData is null");
 		}
-
 
 
 		regionManager.removePlayerFromRegion(player.getUniqueId());
