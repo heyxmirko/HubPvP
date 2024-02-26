@@ -34,47 +34,56 @@ public class SpellCastListener implements Listener {
     @EventHandler
     public void onSpellCast(PlayerInteractEvent e) {
         Player player = e.getPlayer();
+        if (!isPlayerInPvPAndHoldingCorrectWeapon(player, e.getItem())) {
+            return;
+        }
+
+        Action action = e.getAction();
+        if (action == Action.RIGHT_CLICK_AIR) {
+            handleAirRightClick(player);
+        } else if (action == Action.RIGHT_CLICK_BLOCK && isCorrectBlockClicked(e.getClickedBlock(), player)) {
+            handleBlockRightClick(player, e.getClickedBlock());
+        }
+    }
+
+    private boolean isPlayerInPvPAndHoldingCorrectWeapon(Player player, ItemStack item) {
         HubPvP instance = HubPvP.instance();
         PvPManager pvpManager = instance.pvpManager();
-
-        if (pvpManager.isInPvP(player)) {
-            ItemStack item = e.getItem();
-            ItemStack weapon = pvpManager.getWeapon();
-
-            if (item != null && item.getType() == weapon.getType()) {
-                ItemMeta meta = item.getItemMeta();
-                if( (meta != null && meta.hasCustomModelData()) && meta.getCustomModelData() == Objects.requireNonNull(weapon.getItemMeta()).getCustomModelData()) {
-                    if (e.getAction() == Action.RIGHT_CLICK_AIR) {
-                        if(player.getCooldown(Material.DIAMOND_SWORD) > 0) {
-                            player.playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 0.1F, 1.0F);
-                            return;
-                        }
-                        castSpell(player);
-                        player.setCooldown(Material.DIAMOND_SWORD, 200);
-                    }
-                    if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                        Block clickedBlock = e.getClickedBlock();
-
-                        if (clickedBlock != null && isWithinRadius(player.getLocation(), clickedBlock.getLocation(), 3)) {
-
-                            if(player.getCooldown(Material.DIAMOND_SWORD) > 0) {
-                                player.playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 0.1F, 1.0F);
-                                return;
-                            }
-
-                            launchPlayerInAir(player);
-                            new BukkitRunnable() {
-
-                                @Override
-                                public void run() {
-                                    player.setCooldown(Material.DIAMOND_SWORD, 100);
-                                }
-                            }.runTaskLater(plugin, 20L);
-                        }
-                    }
-                }
-            }
+        if (!pvpManager.isInPvP(player)) {
+            return false;
         }
+
+        ItemStack weapon = pvpManager.getWeapon();
+        return item != null && item.getType() == weapon.getType() &&
+                item.hasItemMeta() && item.getItemMeta().hasCustomModelData() &&
+                item.getItemMeta().getCustomModelData() == Objects.requireNonNull(weapon.getItemMeta()).getCustomModelData();
+    }
+
+    private void handleAirRightClick(Player player) {
+        if (player.getCooldown(Material.DIAMOND_SWORD) > 0) {
+            player.playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 0.1F, 1.0F);
+            return;
+        }
+        castSpell(player);
+        player.setCooldown(Material.DIAMOND_SWORD, 200);
+    }
+
+    private boolean isCorrectBlockClicked(Block clickedBlock, Player player) {
+        return clickedBlock != null && isWithinRadius(player.getLocation(), clickedBlock.getLocation(), 3);
+    }
+
+    private void handleBlockRightClick(Player player, Block clickedBlock) {
+        if (player.getCooldown(Material.DIAMOND_SWORD) > 0) {
+            player.playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 0.1F, 1.0F);
+            return;
+        }
+        launchPlayerInAir(player);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                player.setCooldown(Material.DIAMOND_SWORD, 100);
+            }
+        }.runTaskLater(HubPvP.instance(), 20L);
     }
 
     public void castSpell(Player player) {
