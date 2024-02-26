@@ -16,7 +16,7 @@ import java.util.*;
 
 public class PvPManager {
 
-	private final me.quared.hubpvp.core.RegionManager regionManager = new RegionManager();
+	private final me.quared.hubpvp.core.RegionManager regionManager;
 	private final Map<Player, PvPState> playerPvpStates;
 	private final Map<Player, BukkitRunnable> currentTimers;
 	private final Map<UUID, OldPlayerData> oldPlayerDataMap;
@@ -30,6 +30,7 @@ public class PvPManager {
 
 	public PvPManager() {
 
+		this.regionManager = new RegionManager();
 		playerPvpStates = new HashMap<>();
 		currentTimers = new HashMap<>();
 		oldPlayerDataMap = new HashMap<>();
