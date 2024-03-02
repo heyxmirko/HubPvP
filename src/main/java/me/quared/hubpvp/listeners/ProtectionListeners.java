@@ -2,6 +2,7 @@ package me.quared.hubpvp.listeners;
 
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.core.PvPManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -15,6 +16,8 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.Objects;
 
 public class ProtectionListeners implements Listener {
@@ -60,67 +63,19 @@ public class ProtectionListeners implements Listener {
 		if (!(event.getWhoClicked() instanceof Player)) return;
 
 		InventoryType invType = event.getInventory().getType();
-		if (invType != InventoryType.SMITHING) return;
-
-		boolean isShiftClick = event.isShiftClick();
-		ItemStack targetItem;
-
-		if (isShiftClick) {
-			// For shift-clicks, the current item is what's being moved.
-			targetItem = event.getCurrentItem();
-		} else {
-			// For normal clicks, check both the cursor and the slot to cover all cases.
-			ItemStack cursorItem = event.getCursor();
+		if (invType == InventoryType.SMITHING || invType == InventoryType.ANVIL || invType == InventoryType.ENCHANTING) {
 			ItemStack currentItem = event.getCurrentItem();
 
-			// Determine the item to check based on the context of the click.
-			// This is a simplification and might need refinement for complex scenarios.
-			targetItem = (cursorItem != null && cursorItem.getType() != Material.AIR) ? cursorItem : currentItem;
-		}
+			if (currentItem.getType() != Material.AIR && currentItem.hasItemMeta()) {
+				ItemMeta itemMeta = currentItem.getItemMeta();
+				if (!itemMeta.hasCustomModelData()) return;
+				int customModelData = itemMeta.getCustomModelData();
 
-		if (targetItem != null && shouldBlockItem(targetItem)) {
-			event.setCancelled(true);
-			((Player) event.getWhoClicked()).sendMessage(ChatColor.RED + "This item cannot be used in a smithing table.");
-		}
-
-		// Now we determine if the item is the one we want to restrict
-		if (shouldBlockItem(targetItem)) {
-			event.setCancelled(true);
-			((Player) event.getWhoClicked()).sendMessage(ChatColor.RED + "This item cannot be used in a smithing table.");
-			return;
-		}
-
-		// Additional handling for shift-clicks, where we need to consider the direction of the move
-		if (isShiftClick && canMoveToSmithingTable(event.getClick(), targetItem)) {
-			event.setCancelled(true);
-			((Player) event.getWhoClicked()).sendMessage(ChatColor.RED + "This item cannot be used in a smithing table.");
-		}
-	}
-
-	private boolean shouldBlockItem(ItemStack item) {
-		if (item.hasItemMeta()) {
-			ItemMeta meta = item.getItemMeta();
-			if (meta.hasCustomModelData()) {
-				int weaponCustomModelData = getWeaponCustomModelData();
-				return meta.getCustomModelData() == weaponCustomModelData;
+				if (customModelData == pvpManager.getWeapon().getItemMeta().getCustomModelData()) {
+					event.setCancelled(true);
+					event.getWhoClicked().sendMessage(ChatColor.RED + "You cannot upgrade the PvP Sword!");
+				}
 			}
 		}
-		return false;
 	}
-
-	private int getWeaponCustomModelData() {
-		ItemMeta weaponMeta = pvpManager.getWeapon().getItemMeta();
-		if (weaponMeta != null && weaponMeta.hasCustomModelData()) {
-			return weaponMeta.getCustomModelData();
-		}
-		return -1; // Return an invalid value if there's no custom model data
-	}
-
-	private boolean canMoveToSmithingTable(ClickType clickType, ItemStack item) {
-		if (clickType == ClickType.SHIFT_LEFT || clickType == ClickType.SHIFT_RIGHT) {
-			if (shouldBlockItem(item));
-		}
-		return true;
-	}
-
 }
