@@ -4,6 +4,7 @@ import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.core.OldPlayerData;
 import me.quared.hubpvp.core.PvPManager;
 import me.quared.hubpvp.core.PvPState;
+import me.quared.hubpvp.core.RegionManager;
 import me.quared.hubpvp.util.StringUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,9 +23,11 @@ import java.util.*;
 public class DeathListener implements Listener {
 
     private Map<UUID, OldPlayerData> itemsToRestoreAfterRespawn;
+    private RegionManager regionManager;
 
     public DeathListener () {
         itemsToRestoreAfterRespawn = new HashMap<>();
+        this.regionManager = new RegionManager();
     }
 
     @EventHandler
@@ -36,6 +39,7 @@ public class DeathListener implements Listener {
         // Always disable PvP for the victim, regardless of whether the killer exists
         //pvpManager.disablePvP(victim);
         pvpManager.setPlayerState(victim, PvPState.OFF);
+        regionManager.removePlayerFromRegion(victim.getUniqueId());
 
         OldPlayerData oldPlayerData = pvpManager.getOldPlayerDataMap().get(victim.getUniqueId());
         if (oldPlayerData != null) {
