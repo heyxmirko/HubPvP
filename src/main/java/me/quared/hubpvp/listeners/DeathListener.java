@@ -30,17 +30,18 @@ public class DeathListener implements Listener {
         this.regionManager = new RegionManager();
     }
 
+
     @EventHandler
     public void onDeath(PlayerDeathEvent e) {
         HubPvP instance = HubPvP.instance();
         PvPManager pvpManager = instance.pvpManager();
         Player victim = e.getEntity();
 
-        // Always disable PvP for the victim, regardless of whether the killer exists
-        //pvpManager.disablePvP(victim);
+        // Remove the player from the PvP state and region
         pvpManager.setPlayerState(victim, PvPState.OFF);
         regionManager.removePlayerFromRegion(victim.getUniqueId());
 
+        // Store the player's armor and flight status for later restoration after respawn
         OldPlayerData oldPlayerData = pvpManager.getOldPlayerDataMap().get(victim.getUniqueId());
         if (oldPlayerData != null) {
             itemsToRestoreAfterRespawn.put(victim.getUniqueId(), oldPlayerData);
@@ -58,42 +59,6 @@ public class DeathListener implements Listener {
         }
         // Remove all matching items from the drops
         e.getDrops().removeAll(itemsToRemove);
-
-        Player killer = victim.getKiller();
-        // Proceed only if both killer and victim are in PvP mode
-        if (killer != null && pvpManager.isInPvP(victim) && pvpManager.isInPvP(killer)) {
-            int healthOnKill = instance.getConfig().getInt("health-on-kill");
-
-            // Restore health to the killer if specified
-            if (healthOnKill != -1) {
-                double newHealth = Math.min(killer.getHealth() + healthOnKill, killer.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-                killer.setHealth(newHealth);
-                // Send a health-gained message to the killer
-                String healthGainedMessage = instance.getConfig().getString("health-gained-message")
-                        .replace("%extra%", String.valueOf(healthOnKill))
-                        .replace("%killed%", victim.getDisplayName());
-                killer.sendMessage(StringUtil.colorize(healthGainedMessage));
-            }
-
-            // Send kill messages
-            String killedMessage = instance.getConfig().getString("lang.killed")
-                    .replace("%killer%", killer.getDisplayName());
-            victim.sendMessage(StringUtil.colorize(killedMessage));
-
-            String killedOtherMessage = instance.getConfig().getString("lang.killed-other")
-                    .replace("%killed%", victim.getDisplayName());
-            killer.sendMessage(StringUtil.colorize(killedOtherMessage));
-        }
-
-        // Optionally, you can uncomment these if you decide to keep inventory and level on death
-        // e.setKeepInventory(true);
-        // e.setKeepLevel(true);
-
-        // Set the victim's selected inventory slot to 0 (first slot)
-        //victim.getInventory().setHeldItemSlot(0);
-
-        // Clear the default death message
-        e.setDeathMessage("");
     }
 
     @EventHandler
