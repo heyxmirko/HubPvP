@@ -1,11 +1,15 @@
 package me.quared.hubpvp.core;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -50,27 +54,28 @@ public class RegionManager {
         }
     }
 
-    public boolean checkIfPlayerIsInRegion(Player player, String regionName) {
+
+    public boolean isPlayerInAnyRegion(Player player) {
         WorldGuard worldGuard = WorldGuard.getInstance();
         RegionContainer container = worldGuard.getPlatform().getRegionContainer();
         World world = BukkitAdapter.adapt(Objects.requireNonNull(player.getWorld())); // Convert Bukkit world to WorldEdit world
         com.sk89q.worldguard.protection.managers.RegionManager regions = container.get(world);
         if (regions == null) return false; // Always check if regions is null
-        ProtectedRegion region = regions.getRegion(regionName);
-        if (region == null) return false; // Check if the region exists
-        return region.contains(BukkitAdapter.asBlockVector(player.getLocation()));
+        return regions.getApplicableRegions(BukkitAdapter.asBlockVector(player.getLocation())).size() > 0;
     }
 
-    public boolean checkFlagInRegion(String regionName, String flag) {
-        WorldGuard worldGuard = WorldGuard.getInstance();
-        RegionContainer container = worldGuard.getPlatform().getRegionContainer();
-        World world = BukkitAdapter.adapt(Objects.requireNonNull(Bukkit.getWorld("world"))); // Convert Bukkit world to WorldEdit world
-        com.sk89q.worldguard.protection.managers.RegionManager regions = container.get(world);
-        if (regions == null) return false; // Always check if regions is null
-        ProtectedRegion region = regions.getRegion(regionName);
-        if (region == null) return false; // Check if the region exists
-        // Check if the flag exists, if it does and is set to yes, return true
-        // otherwise return false
-        return region.getFlag(WorldGuard.getInstance().getFlagRegistry().get(flag)) == StateFlag.State.ALLOW;
+
+    public boolean isPlayerInKeepInventoryRegion(Player player) {
+        WorldGuard wg = WorldGuard.getInstance();
+        RegionQuery query = wg.getPlatform().getRegionContainer().createQuery();
+        Location loc = BukkitAdapter.adapt(player.getLocation());
+
+        Flag<?> keepInvFlag = wg.getFlagRegistry().get("keep-inventory");
+        if (keepInvFlag == null) return false;
+        Object flagValue = query.queryValue(loc, null, keepInvFlag);
+        if (flagValue == null) return false;
+        return (Boolean) flagValue;
     }
+
+
 }
