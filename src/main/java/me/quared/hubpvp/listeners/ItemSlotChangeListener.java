@@ -8,6 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,6 +18,25 @@ import javax.swing.*;
 import java.util.Objects;
 
 public class ItemSlotChangeListener implements Listener {
+
+	private PvPManager pvpManager;
+
+	public ItemSlotChangeListener() {
+		this.pvpManager = HubPvP.instance().pvpManager();
+	}
+
+	@EventHandler
+	public void onSwordDrop(PlayerDropItemEvent e) {
+		ItemStack droppedItem = e.getItemDrop().getItemStack();
+		if (droppedItem.getType() != pvpManager.getWeapon().getType()) return;
+		if (!droppedItem.hasItemMeta()) return;
+		if (!droppedItem.getItemMeta().hasCustomModelData()) return;
+		if (droppedItem.getItemMeta().getCustomModelData() != pvpManager.getWeapon().getItemMeta().getCustomModelData()) return;
+		Player p = e.getPlayer();
+		if (pvpManager.isInPvP(p)) {
+			pvpManager.disablePvP(p);
+		}
+	}
 
 	@EventHandler
 	public void onSlotChange(PlayerItemHeldEvent e) {

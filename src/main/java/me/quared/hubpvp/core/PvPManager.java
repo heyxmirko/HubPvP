@@ -2,6 +2,7 @@ package me.quared.hubpvp.core;
 
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.util.StringUtil;
+import nl.marido.deluxecombat.api.DeluxeCombatAPI;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -20,6 +21,7 @@ public class PvPManager {
 	private final Map<Player, PvPState> playerPvpStates;
 	private final Map<Player, BukkitRunnable> currentTimers;
 	private final Map<UUID, OldPlayerData> oldPlayerDataMap;
+	private final DeluxeCombatAPI deluxeCombatAPI;
 
 
 	public Map<UUID, OldPlayerData> getOldPlayerDataMap() {
@@ -34,6 +36,7 @@ public class PvPManager {
 		playerPvpStates = new HashMap<>();
 		currentTimers = new HashMap<>();
 		oldPlayerDataMap = new HashMap<>();
+		this.deluxeCombatAPI = new DeluxeCombatAPI();
 
 		loadItems();
 	}
@@ -126,7 +129,10 @@ public class PvPManager {
 		player.getInventory().setLeggings(getLeggings());
 		player.getInventory().setBoots(getBoots());
 
-		regionManager.addPlayerToRegion(player.getUniqueId());
+		if (!deluxeCombatAPI.isInCombat(player)) {
+			regionManager.addPlayerToRegion(player.getUniqueId());
+		}
+
 		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-enabled")));
 		player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 2.0F);
 		player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1.0F, 1.0F);

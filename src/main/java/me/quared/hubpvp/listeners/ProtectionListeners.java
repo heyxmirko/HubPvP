@@ -61,14 +61,29 @@ public class ProtectionListeners implements Listener {
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		if (!(event.getWhoClicked() instanceof Player)) return;
-		InventoryType invType = event.getInventory().getType();
 
+		ItemStack currentItem = event.getCurrentItem();
+		if (currentItem == null) return;
+
+		if (pvpManager.isInPvP(((Player) event.getWhoClicked()).getPlayer())) {
+			if (currentItem.getType() != pvpManager.getWeapon().getType()) return;
+			if (!currentItem.hasItemMeta()) return;
+
+			ItemMeta itemMeta = currentItem.getItemMeta();
+			if (!itemMeta.hasCustomModelData()) return;
+			int customModelData = itemMeta.getCustomModelData();
+
+			if (customModelData == pvpManager.getWeapon().getItemMeta().getCustomModelData()) {
+				pvpManager.disablePvP(((Player) event.getWhoClicked()).getPlayer());
+			}
+		}
+
+
+		InventoryType invType = event.getInventory().getType();
 
 		if (!(invType == InventoryType.SMITHING || invType == InventoryType.ANVIL || invType == InventoryType.ENCHANTING)) return;
 
-		ItemStack currentItem = event.getCurrentItem();
 
-		if (currentItem == null) return;
 		if (currentItem.getType() != pvpManager.getWeapon().getType()) return;
 		if (!currentItem.hasItemMeta()) return;
 
