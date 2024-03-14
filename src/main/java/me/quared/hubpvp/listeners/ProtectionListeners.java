@@ -9,18 +9,13 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.inventory.PrepareSmithingEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Objects;
 
 public class ProtectionListeners implements Listener {
 
@@ -68,9 +63,8 @@ public class ProtectionListeners implements Listener {
 		if (!mainHandItem.hasItemMeta()) return;
 		if (!mainHandItem.getItemMeta().hasCustomModelData()) return;
 		if (mainHandItem.getItemMeta().getCustomModelData() == pvpManager.getWeapon().getItemMeta().getCustomModelData()) {
-			event.setCancelled(true);
+			pvpManager.disablePvP(event.getPlayer());
 		}
-
 	}
 
 	@EventHandler
@@ -82,7 +76,28 @@ public class ProtectionListeners implements Listener {
 
 		Player p = ((Player) event.getWhoClicked()).getPlayer();
 
+		InventoryType invType = event.getInventory().getType();
 		if (pvpManager.getPlayerState(p) == PvPState.ENABLING || pvpManager.getPlayerState(p) == PvPState.ON) {
+
+			if (invType == InventoryType.CRAFTING) {
+				if (event.getAction() == InventoryAction.HOTBAR_SWAP) {
+					//Get the item from the hotbar
+					ItemStack hotBarItem = p.getInventory().getItem(event.getHotbarButton());
+					if (hotBarItem != null) {
+						if (hotBarItem.getType() == pvpManager.getWeapon().getType()) {
+							if (hotBarItem.hasItemMeta()) {
+								ItemMeta hotBarItemMeta = hotBarItem.getItemMeta();
+								if (hotBarItemMeta.hasCustomModelData()) {
+									if (hotBarItemMeta.getCustomModelData() == pvpManager.getWeapon().getItemMeta().getCustomModelData()) {
+										pvpManager.disablePvP(((Player) event.getWhoClicked()).getPlayer());
+									}
+								}
+							}
+						}
+					}
+
+				}
+			}
 
 			if (currentItem.getType() != pvpManager.getWeapon().getType()) return;
 			if (!currentItem.hasItemMeta()) return;
@@ -97,7 +112,6 @@ public class ProtectionListeners implements Listener {
 		}
 
 
-		InventoryType invType = event.getInventory().getType();
 
 		if (!(invType == InventoryType.SMITHING || invType == InventoryType.ANVIL || invType == InventoryType.ENCHANTING)) return;
 
