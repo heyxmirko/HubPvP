@@ -2,6 +2,7 @@ package me.quared.hubpvp.listeners;
 
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.core.PvPManager;
+import me.quared.hubpvp.core.PvPState;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,6 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareSmithingEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -59,13 +61,29 @@ public class ProtectionListeners implements Listener {
 	}
 
 	@EventHandler
+	public void swapHandItems(PlayerSwapHandItemsEvent event) {
+		ItemStack mainHandItem = event.getOffHandItem();
+		if (mainHandItem == null) return;
+		if (mainHandItem.getType() != pvpManager.getWeapon().getType()) return;
+		if (!mainHandItem.hasItemMeta()) return;
+		if (!mainHandItem.getItemMeta().hasCustomModelData()) return;
+		if (mainHandItem.getItemMeta().getCustomModelData() == pvpManager.getWeapon().getItemMeta().getCustomModelData()) {
+			event.setCancelled(true);
+		}
+
+	}
+
+	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		if (!(event.getWhoClicked() instanceof Player)) return;
 
 		ItemStack currentItem = event.getCurrentItem();
 		if (currentItem == null) return;
 
-		if (pvpManager.isInPvP(((Player) event.getWhoClicked()).getPlayer())) {
+		Player p = ((Player) event.getWhoClicked()).getPlayer();
+
+		if (pvpManager.getPlayerState(p) == PvPState.ENABLING || pvpManager.getPlayerState(p) == PvPState.ON) {
+
 			if (currentItem.getType() != pvpManager.getWeapon().getType()) return;
 			if (!currentItem.hasItemMeta()) return;
 
