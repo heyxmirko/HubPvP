@@ -3,6 +3,7 @@ package me.quared.hubpvp.core;
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.util.StringUtil;
 import nl.marido.deluxecombat.api.DeluxeCombatAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -147,8 +148,11 @@ public class PvPManager {
 	}
 
 	public void removePlayer(Player p) {
-		disablePvP(p);
-		playerPvpStates.remove(p);
+		//disablePvP(p);
+		//playerPvpStates.remove(p);
+
+		this.setPlayerState(p, PvPState.OFF);
+		regionManager.removePlayerFromRegion(p.getUniqueId());
 	}
 
 	public void disablePvP(Player player) {

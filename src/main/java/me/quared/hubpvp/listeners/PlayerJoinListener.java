@@ -4,6 +4,7 @@ import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.core.OldPlayerData;
 import me.quared.hubpvp.core.PvPManager;
 import me.quared.hubpvp.core.PvPState;
+import me.quared.hubpvp.core.RegionManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,9 +31,10 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         Player p = e.getPlayer();
-        PvPManager pvPManager = HubPvP.instance().pvpManager();
+        PvPManager pvpManager = HubPvP.instance().pvpManager();
 
-        pvPManager.removePlayer(p);
+        //pvpManager.removePlayer(p);
+        pvpManager.removePlayer(p);
     }
 
 }
