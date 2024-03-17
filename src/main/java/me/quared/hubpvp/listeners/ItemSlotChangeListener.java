@@ -33,7 +33,8 @@ public class ItemSlotChangeListener implements Listener {
 		if (!droppedItem.getItemMeta().hasCustomModelData()) return;
 		if (droppedItem.getItemMeta().getCustomModelData() != pvpManager.getWeapon().getItemMeta().getCustomModelData()) return;
 		Player p = e.getPlayer();
-		if (pvpManager.isInPvP(p)) {
+		PvPState pvpState = pvpManager.getPlayerState(e.getPlayer());
+		if (pvpState == PvPState.ON || pvpState == PvPState.ENABLING) {
 			pvpManager.disablePvP(p);
 		}
 	}
