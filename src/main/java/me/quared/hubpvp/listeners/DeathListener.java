@@ -97,6 +97,7 @@ public class DeathListener implements Listener {
 
         // Remove the player from the PvP state and region
         pvpManager.removePlayer(victim);
+        pvpManager.getOldPlayerDataMap().remove(victim.getUniqueId());
     }
 
     @EventHandler
