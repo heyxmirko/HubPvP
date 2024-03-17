@@ -9,6 +9,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -153,7 +154,30 @@ public class PvPManager {
 
 		this.setPlayerState(p, PvPState.OFF);
 		regionManager.removePlayerFromRegion(p.getUniqueId());
+		clearArmorFromInventory(p);
 	}
+
+	public void clearArmorFromInventory(Player p) {
+		Inventory inv = p.getInventory();
+		List<Integer> slotsToRemove = new ArrayList<>();
+
+		// Collect slots of items to remove
+		for (int i = 0; i < inv.getSize(); i++) {
+			ItemStack item = inv.getItem(i);
+			if (item != null && item.hasItemMeta()) {
+				ItemMeta meta = item.getItemMeta();
+				if (meta.hasCustomModelData() && getArmorCustomModelData().contains(meta.getCustomModelData())) {
+					slotsToRemove.add(i);
+				}
+			}
+		}
+
+		// Remove items from collected slots
+		for (Integer slot : slotsToRemove) {
+			inv.clear(slot);
+		}
+	}
+
 
 	public void disablePvP(Player player) {
 		setPlayerState(player, PvPState.OFF);
