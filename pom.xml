@@ -90,9 +90,9 @@
         <dependency>
             <groupId>nl.marido.deluxecombat</groupId>
             <artifactId>DeluxeCombat</artifactId>
-            <version>1.60.3</version>
+            <version>1.60.4</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/DeluxeCombat v.1.60.3.jar</systemPath>
+            <systemPath>${project.basedir}/DeluxeCombat v.1.60.4.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
