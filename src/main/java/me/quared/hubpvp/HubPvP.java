@@ -15,7 +15,6 @@ public final class HubPvP extends JavaPlugin {
 
 	private PvPManager pvpManager;
 
-
 	public static HubPvP instance() {
 		return instance;
 	}
