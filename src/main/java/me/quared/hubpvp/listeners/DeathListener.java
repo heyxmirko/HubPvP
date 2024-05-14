@@ -1,16 +1,11 @@
 package me.quared.hubpvp.listeners;
 
-import com.sk89q.worldguard.protection.flags.StateFlag;
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.core.OldPlayerData;
 import me.quared.hubpvp.core.PvPManager;
-import me.quared.hubpvp.core.PvPState;
-import me.quared.hubpvp.core.RegionManager;
-import me.quared.hubpvp.util.StringUtil;
-import org.bukkit.Bukkit;
+import me.quared.hubpvp.managers.RegionManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,7 +14,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.PluginAwareness;
 
 import java.util.*;
 

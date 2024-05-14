@@ -1,7 +1,9 @@
 package me.quared.hubpvp.core;
 
 import me.quared.hubpvp.HubPvP;
+import me.quared.hubpvp.managers.RegionManager;
 import me.quared.hubpvp.util.StringUtil;
+import me.quared.hubpvp.util.adapters.ItemStackAdapter;
 import nl.marido.deluxecombat.api.DeluxeCombatAPI;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -18,7 +20,7 @@ import java.util.*;
 
 public class PvPManager {
 
-	private final me.quared.hubpvp.core.RegionManager regionManager;
+	private final RegionManager regionManager;
 	private final Map<Player, PvPState> playerPvpStates;
 	private final Map<Player, BukkitRunnable> currentTimers;
 	private final Map<UUID, OldPlayerData> oldPlayerDataMap;
@@ -83,8 +85,24 @@ public class PvPManager {
 	public void enablePvP(Player player) {
 		setPlayerState(player, PvPState.ON);
 
-		if (getOldData(player) != null) getOldPlayerDataMap().remove(player.getUniqueId());
-		getOldPlayerDataMap().put(player.getUniqueId(), new OldPlayerData(player.getUniqueId(), player.getInventory().getArmorContents(), player.getAllowFlight()));
+		if (getOldPlayerDataFromMap(player) != null) getOldPlayerDataMap().remove(player.getUniqueId());
+		OldPlayerData oldPlayerData = new OldPlayerData(player.getUniqueId(), player.getInventory().getArmorContents(), player.getAllowFlight());
+		getOldPlayerDataMap().put(player.getUniqueId(), oldPlayerData);
+
+		ItemStack[] armorArray = oldPlayerData.armor();
+		HubPvP.instance().getLogger().info("----------------------------------------");
+
+		for (ItemStack armor : armorArray) {
+
+			ItemStackAdapter itemStackAdapter = ItemStackAdapter.fromItemStack(armor);
+			String armorSerialized = itemStackAdapter.serialize();
+
+			ItemStack itemStack = ItemStackAdapter.deserialize(armorSerialized).toItemStack();
+			player.getInventory().addItem(itemStack);
+
+			HubPvP.instance().getLogger().info(armorSerialized);
+		}
+		HubPvP.instance().getLogger().info("----------------------------------------");
 
 		player.setAllowFlight(false);
 		player.getInventory().setHelmet(getHelmet());
@@ -103,7 +121,7 @@ public class PvPManager {
 
 	public void disablePvP(Player player) {
 		setPlayerState(player, PvPState.OFF);
-		OldPlayerData oldPlayerData = getOldData(player);
+		OldPlayerData oldPlayerData = getOldPlayerDataFromMap(player);
 
 		if (oldPlayerData != null) {
 			player.getInventory().setHelmet(oldPlayerData.armor()[3] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[3]);
@@ -185,7 +203,7 @@ public class PvPManager {
 		return item;
 	}
 
-	private @Nullable OldPlayerData getOldData(Player player) {
+	private @Nullable OldPlayerData getOldPlayerDataFromMap(Player player) {
 		return oldPlayerDataMap.get(player.getUniqueId());
 	}
 

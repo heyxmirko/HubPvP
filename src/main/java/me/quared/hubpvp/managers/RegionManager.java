@@ -1,4 +1,4 @@
-package me.quared.hubpvp.core;
+package me.quared.hubpvp.managers;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.util.Location;
