@@ -29,12 +29,6 @@ public class PlayerJoinListener implements Listener {
         Player p = e.getPlayer();
         PvPManager pvPManager = HubPvP.instance().pvpManager();
 
-        // Now relaying on giving weapon by command /hubpvp giveWeapon
-        /*if (p.hasPermission("hubpvp.use") &&
-                !HubPvP.instance().getConfig().getStringList("disabled-worlds").contains(p.getWorld().getName())) {
-            pvPManager.giveWeapon(p);
-        }*/
-
         pvPManager.setPlayerState(p, PvPState.OFF);
 
         OldPlayerData oldPlayerData = itemsToRestoreAfterRejoin.get(p.getUniqueId());

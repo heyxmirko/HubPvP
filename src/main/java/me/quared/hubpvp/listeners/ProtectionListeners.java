@@ -110,10 +110,7 @@ public class ProtectionListeners implements Listener {
 			}
 		}
 
-
-
 		if (!(invType == InventoryType.SMITHING || invType == InventoryType.ANVIL || invType == InventoryType.ENCHANTING)) return;
-
 
 		if (currentItem.getType() != pvpManager.getWeapon().getType()) return;
 		if (!currentItem.hasItemMeta()) return;

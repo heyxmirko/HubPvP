@@ -23,35 +23,24 @@ public class PvPManager {
 	private final Map<Player, BukkitRunnable> currentTimers;
 	private final Map<UUID, OldPlayerData> oldPlayerDataMap;
 	private final DeluxeCombatAPI deluxeCombatAPI;
-
-
 	public Map<UUID, OldPlayerData> getOldPlayerDataMap() {
 		return this.oldPlayerDataMap;
 	}
-
 	private ItemStack weapon, helmet, chestplate, leggings, boots;
 
-	public PvPManager() {
 
+	// Constructor
+	public PvPManager() {
 		this.regionManager = new RegionManager();
 		playerPvpStates = new HashMap<>();
 		currentTimers = new HashMap<>();
 		oldPlayerDataMap = new HashMap<>();
 		this.deluxeCombatAPI = new DeluxeCombatAPI();
-
-		loadItems();
+		loadItemsFromConfig();
 	}
 
-	public void loadItems() {
-		// Weapon
-		this.weapon = getItemFromConfig("weapon");
-		// Armor
-		this.helmet = getItemFromConfig("helmet");
-		this.chestplate = getItemFromConfig("chestplate");
-		this.leggings = getItemFromConfig("leggings");
-		this.boots = getItemFromConfig("boots");
-	}
 
+	// Getters
 	public ItemStack getWeapon(){
 		return this.weapon;
 	}
@@ -67,48 +56,9 @@ public class PvPManager {
 	public ItemStack getBoots() {
 		return this.boots;
 	}
-
 	public Map<Player, BukkitRunnable> getCurrentTimers() {
 		return this.currentTimers;
 	}
-
-	public ItemStack getItemFromConfig(String name) {
-		HubPvP instance = HubPvP.instance();
-		String materialName = instance.getConfig().getString("items." + name + ".material");
-		Material material = Material.getMaterial(materialName.toUpperCase());
-		ItemStack item = new ItemStack(material, 1);
-		ItemMeta meta = item.getItemMeta();
-
-		if (meta != null) {
-			String itemName = instance.getConfig().getString("items." + name + ".name");
-			if (itemName != null && !itemName.isEmpty()) {
-				meta.setDisplayName(StringUtil.colorize(itemName));
-			}
-
-			List<String> lore = instance.getConfig().getStringList("items." + name + ".lore");
-			if (!lore.isEmpty()) {
-				meta.setLore(StringUtil.colorize(lore));
-			}
-
-			int customModelData = instance.getConfig().getInt("items." + name + ".custom_model_data", 0);
-			if (customModelData != 0) {
-				meta.setCustomModelData(customModelData);
-			}
-
-			List<String> enchantments = instance.getConfig().getStringList("items." + name + ".enchantments");
-			for (String enchString : enchantments) {
-				String[] parts = enchString.split(":");
-				Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(parts[0].toLowerCase()));
-				if (enchantment != null) {
-					meta.addEnchant(enchantment, Integer.parseInt(parts[1]), true);
-				}
-			}
-
-			item.setItemMeta(meta);
-		}
-		return item;
-	}
-
 	public List<Integer> getArmorCustomModelData() {
 		List<Integer> list = new ArrayList<>();
 		list.add(Objects.requireNonNull(getHelmet().getItemMeta()).getCustomModelData());
@@ -116,6 +66,18 @@ public class PvPManager {
 		list.add(Objects.requireNonNull(getLeggings().getItemMeta()).getCustomModelData());
 		list.add(Objects.requireNonNull(getBoots().getItemMeta()).getCustomModelData());
 		return list;
+	}
+	public PvPState getPlayerState(Player p) {
+		return playerPvpStates.get(p);
+	}
+
+	// Methods
+	public void loadItemsFromConfig() {
+		this.weapon = getItemFromConfig("weapon");
+		this.helmet = getItemFromConfig("helmet");
+		this.chestplate = getItemFromConfig("chestplate");
+		this.leggings = getItemFromConfig("leggings");
+		this.boots = getItemFromConfig("boots");
 	}
 
 	public void enablePvP(Player player) {
@@ -139,24 +101,95 @@ public class PvPManager {
 		player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1.0F, 1.0F);
 	}
 
+	public void disablePvP(Player player) {
+		setPlayerState(player, PvPState.OFF);
+		OldPlayerData oldPlayerData = getOldData(player);
+
+		if (oldPlayerData != null) {
+			player.getInventory().setHelmet(oldPlayerData.armor()[3] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[3]);
+			player.getInventory().setChestplate(oldPlayerData.armor()[2] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[2]);
+			player.getInventory().setLeggings(oldPlayerData.armor()[1] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[1]);
+			player.getInventory().setBoots(oldPlayerData.armor()[0] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[0]);
+			player.setAllowFlight(oldPlayerData.canFly());
+			oldPlayerDataMap.remove(player.getUniqueId());
+		}
+		regionManager.removePlayerFromRegion(player.getUniqueId());
+		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-disabled")));
+		player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1.F, 1.0F);
+	}
+
+
 	public void setPlayerState(Player p, PvPState state) {
 		playerPvpStates.put(p, state);
 	}
 
-	public @Nullable OldPlayerData getOldData(Player player) {
-		return oldPlayerDataMap.get(player.getUniqueId());
-	}
-
 	public void removePlayer(Player p) {
-		//disablePvP(p);
-		//playerPvpStates.remove(p);
-
 		this.setPlayerState(p, PvPState.OFF);
 		regionManager.removePlayerFromRegion(p.getUniqueId());
 		clearArmorFromInventory(p);
 	}
 
-	public void clearArmorFromInventory(Player p) {
+	public void disable() {
+		for (Player p : playerPvpStates.keySet()) {
+			if (isInPvP(p)) disablePvP(p);
+		}
+		playerPvpStates.clear();
+	}
+
+	public boolean isInPvP(Player player) {
+		return getPlayerState(player) == PvPState.ON || getPlayerState(player) == PvPState.DISABLING;
+	}
+
+	public void putTimer(Player p, BukkitRunnable timerTask) {
+		if (getCurrentTimers().containsKey(p)) {
+			getCurrentTimers().get(p).cancel();
+		}
+		getCurrentTimers().put(p, timerTask);
+	}
+
+	public void removeTimer(Player p) {
+		if (getCurrentTimers().containsKey(p)) {
+			getCurrentTimers().get(p).cancel();
+		}
+		getCurrentTimers().remove(p);
+	}
+
+
+	// Private methods
+	private ItemStack getItemFromConfig(String name) {
+		HubPvP instance = HubPvP.instance();
+
+		String materialName = instance.getConfig().getString("items." + name + ".material");
+		Material material = Material.getMaterial(materialName.toUpperCase());
+		ItemStack item = new ItemStack(material, 1);
+		ItemMeta meta = item.getItemMeta();
+
+		if (meta != null) {
+			String itemName = instance.getConfig().getString("items." + name + ".name");
+			if (itemName != null && !itemName.isEmpty()) meta.setDisplayName(StringUtil.colorize(itemName));
+
+			List<String> lore = instance.getConfig().getStringList("items." + name + ".lore");
+			if (!lore.isEmpty()) meta.setLore(StringUtil.colorize(lore));
+
+			int customModelData = instance.getConfig().getInt("items." + name + ".custom_model_data", 0);
+			if (customModelData != 0) meta.setCustomModelData(customModelData);
+
+			List<String> enchantments = instance.getConfig().getStringList("items." + name + ".enchantments");
+			for (String enchString : enchantments) {
+				String[] parts = enchString.split(":");
+				Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(parts[0].toLowerCase()));
+				if (enchantment != null) meta.addEnchant(enchantment, Integer.parseInt(parts[1]), true);
+			}
+			item.setItemMeta(meta);
+		}
+		return item;
+	}
+
+	private @Nullable OldPlayerData getOldData(Player player) {
+		return oldPlayerDataMap.get(player.getUniqueId());
+	}
+
+	private void clearArmorFromInventory(Player p) {
 		Inventory inv = p.getInventory();
 		List<Integer> slotsToRemove = new ArrayList<>();
 
@@ -175,61 +208,5 @@ public class PvPManager {
 		for (Integer slot : slotsToRemove) {
 			inv.clear(slot);
 		}
-	}
-
-
-	public void disablePvP(Player player) {
-		setPlayerState(player, PvPState.OFF);
-
-		OldPlayerData oldPlayerData = getOldData(player);
-
-		if (oldPlayerData != null) {
-			player.getInventory().setHelmet(oldPlayerData.armor()[3] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[3]);
-			player.getInventory().setChestplate(oldPlayerData.armor()[2] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[2]);
-			player.getInventory().setLeggings(oldPlayerData.armor()[1] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[1]);
-			player.getInventory().setBoots(oldPlayerData.armor()[0] == null ? new ItemStack(Material.AIR) : oldPlayerData.armor()[0]);
-			player.setAllowFlight(oldPlayerData.canFly());
-
-			oldPlayerDataMap.remove(player.getUniqueId());
-		}
-
-
-		regionManager.removePlayerFromRegion(player.getUniqueId());
-		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-disabled")));
-		player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1.F, 1.0F);
-
-	}
-
-	public void disable() {
-		for (Player p : playerPvpStates.keySet()) {
-			if (isInPvP(p)) disablePvP(p);
-		}
-		playerPvpStates.clear();
-	}
-
-	public boolean isInPvP(Player player) {
-		return getPlayerState(player) == PvPState.ON || getPlayerState(player) == PvPState.DISABLING;
-	}
-
-	public PvPState getPlayerState(Player p) {
-		return playerPvpStates.get(p);
-	}
-
-	public void giveWeapon(Player p) {
-		p.getInventory().setItem(HubPvP.instance().getConfig().getInt("items.weapon.slot") - 1, getWeapon());
-	}
-
-	public void putTimer(Player p, BukkitRunnable timerTask) {
-		if (getCurrentTimers().containsKey(p)) {
-			getCurrentTimers().get(p).cancel();
-		}
-		getCurrentTimers().put(p, timerTask);
-	}
-
-	public void removeTimer(Player p) {
-		if (getCurrentTimers().containsKey(p)) {
-			getCurrentTimers().get(p).cancel();
-		}
-		getCurrentTimers().remove(p);
 	}
 }
