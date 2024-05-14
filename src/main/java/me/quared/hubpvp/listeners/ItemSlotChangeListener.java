@@ -14,9 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.swing.*;
-import java.util.Objects;
-
 public class ItemSlotChangeListener implements Listener {
 
 	private PvPManager pvpManager;

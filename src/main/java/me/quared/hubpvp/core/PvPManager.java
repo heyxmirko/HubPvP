@@ -3,7 +3,6 @@ package me.quared.hubpvp.core;
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.util.StringUtil;
 import nl.marido.deluxecombat.api.DeluxeCombatAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -123,7 +122,7 @@ public class PvPManager {
 		setPlayerState(player, PvPState.ON);
 
 		if (getOldData(player) != null) getOldPlayerDataMap().remove(player.getUniqueId());
-		getOldPlayerDataMap().put(player.getUniqueId(), new OldPlayerData(player, player.getInventory().getArmorContents(), player.getAllowFlight()));
+		getOldPlayerDataMap().put(player.getUniqueId(), new OldPlayerData(player.getUniqueId(), player.getInventory().getArmorContents(), player.getAllowFlight()));
 
 		player.setAllowFlight(false);
 		player.getInventory().setHelmet(getHelmet());

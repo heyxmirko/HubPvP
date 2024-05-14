@@ -41,7 +41,6 @@ public final class HubPvP extends JavaPlugin {
 
 	private void registerListeners() {
 		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents(new DamageListener(), this);
 		pm.registerEvents(new DeathListener(), this);
 		pm.registerEvents(new ItemSlotChangeListener(), this);
 		pm.registerEvents(new PlayerJoinListener(), this);

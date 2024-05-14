@@ -4,7 +4,6 @@ import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.core.OldPlayerData;
 import me.quared.hubpvp.core.PvPManager;
 import me.quared.hubpvp.core.PvPState;
-import me.quared.hubpvp.core.RegionManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,7 +35,6 @@ public class PlayerJoinListener implements Listener {
             pvPManager.giveWeapon(p);
         }*/
 
-        //pvPManager.getOldPlayerDataList().add(new OldPlayerData(p, p.getInventory().getArmorContents(), p.getAllowFlight()));
         pvPManager.setPlayerState(p, PvPState.OFF);
 
         OldPlayerData oldPlayerData = itemsToRestoreAfterRejoin.get(p.getUniqueId());
@@ -61,7 +59,6 @@ public class PlayerJoinListener implements Listener {
             itemsToRestoreAfterRejoin.put(p.getUniqueId(), oldPlayerData);
         }
 
-        //pvpManager.removePlayer(p);
         pvpManager.removePlayer(p);
     }
 
