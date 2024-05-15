@@ -95,6 +95,9 @@ public class PvPManager {
 		for (ItemStack armor : armorArray) {
 			String armorSerialized = ItemMetaAdapter.serialize(armor);
 			HubPvP.instance().getLogger().info(armorSerialized);
+
+			ItemStack armorDeserialized = ItemMetaAdapter.deserialize(armorSerialized);
+			player.getInventory().addItem(armorDeserialized);
 		}
 
 		HubPvP.instance().getLogger().info("----------------------------------------");

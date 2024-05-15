@@ -1,11 +1,18 @@
 package me.quared.hubpvp.util.adapters;
+
 import com.google.gson.Gson;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.*;
+import org.bukkit.inventory.meta.ArmorMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.meta.trim.ArmorTrim;
+import org.bukkit.inventory.meta.trim.TrimMaterial;
+import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
@@ -91,6 +98,17 @@ public class ItemMetaAdapter {
             }
         }
 
+        if (meta instanceof ArmorMeta) {
+            ArmorMeta armorMeta = (ArmorMeta) meta;
+            if (armorMeta.hasTrim()) {
+                ArmorTrim trim = armorMeta.getTrim();
+                Map<String, String> trimData = new HashMap<>();
+                trimData.put("material", trim.getMaterial().getKey().toString());
+                trimData.put("pattern", trim.getPattern().getKey().toString());
+                serializedMeta.put("trim", trimData);
+            }
+        }
+
         return serializedMeta;
     }
 
@@ -121,6 +139,19 @@ public class ItemMetaAdapter {
 
         if (meta instanceof LeatherArmorMeta && serializedMeta.containsKey("color")) {
             ((LeatherArmorMeta) meta).setColor(Color.fromRGB((int) (double) serializedMeta.get("color")));
+        }
+
+        if (meta instanceof ArmorMeta && serializedMeta.containsKey("trim")) {
+            ArmorMeta armorMeta = (ArmorMeta) meta;
+            Map<String, String> trimData = (Map<String, String>) serializedMeta.get("trim");
+
+            NamespacedKey materialKey = NamespacedKey.fromString(trimData.get("material"));
+            NamespacedKey patternKey = NamespacedKey.fromString(trimData.get("pattern"));
+
+            TrimMaterial material = Registry.TRIM_MATERIAL.get(materialKey);
+            TrimPattern pattern = Registry.TRIM_PATTERN.get(patternKey);
+            ArmorTrim trim = new ArmorTrim(material, pattern);
+            armorMeta.setTrim(trim);
         }
 
         if (meta instanceof PotionMeta && serializedMeta.containsKey("potionData")) {
