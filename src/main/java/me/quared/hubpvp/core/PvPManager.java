@@ -2,6 +2,7 @@ package me.quared.hubpvp.core;
 
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.managers.RegionManager;
+import me.quared.hubpvp.util.ArmorSerializationUtil;
 import me.quared.hubpvp.util.StringUtil;
 import me.quared.hubpvp.util.adapters.ItemMetaAdapter;
 import nl.marido.deluxecombat.api.DeluxeCombatAPI;
@@ -90,17 +91,17 @@ public class PvPManager {
 		getOldPlayerDataMap().put(player.getUniqueId(), oldPlayerData);
 
 		ItemStack[] armorArray = oldPlayerData.armor();
+
+		String allArmorSerialized = ArmorSerializationUtil.serializeArmorArray(armorArray);
+		ItemStack[] deserializedArmorArray = ArmorSerializationUtil.deserializeArmorArray(allArmorSerialized);
+
+		HubPvP.instance().getLogger().info("----------------------------------------");
+		HubPvP.instance().getLogger().info(allArmorSerialized.replace("\\", ""));
 		HubPvP.instance().getLogger().info("----------------------------------------");
 
-		for (ItemStack armor : armorArray) {
-			String armorSerialized = ItemMetaAdapter.serialize(armor);
-			HubPvP.instance().getLogger().info(armorSerialized);
-
-			ItemStack armorDeserialized = ItemMetaAdapter.deserialize(armorSerialized);
-			player.getInventory().addItem(armorDeserialized);
+		for (ItemStack armor : deserializedArmorArray) {
+			player.getInventory().addItem(armor);
 		}
-
-		HubPvP.instance().getLogger().info("----------------------------------------");
 
 		player.setAllowFlight(false);
 		player.getInventory().setHelmet(getHelmet());
