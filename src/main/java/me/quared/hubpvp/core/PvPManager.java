@@ -3,7 +3,7 @@ package me.quared.hubpvp.core;
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.managers.RegionManager;
 import me.quared.hubpvp.util.StringUtil;
-import me.quared.hubpvp.util.adapters.ItemStackAdapter;
+import me.quared.hubpvp.util.adapters.ItemMetaAdapter;
 import nl.marido.deluxecombat.api.DeluxeCombatAPI;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -93,15 +93,10 @@ public class PvPManager {
 		HubPvP.instance().getLogger().info("----------------------------------------");
 
 		for (ItemStack armor : armorArray) {
-
-			ItemStackAdapter itemStackAdapter = ItemStackAdapter.fromItemStack(armor);
-			String armorSerialized = itemStackAdapter.serialize();
-
-			ItemStack itemStack = ItemStackAdapter.deserialize(armorSerialized).toItemStack();
-			player.getInventory().addItem(itemStack);
-
+			String armorSerialized = ItemMetaAdapter.serialize(armor);
 			HubPvP.instance().getLogger().info(armorSerialized);
 		}
+
 		HubPvP.instance().getLogger().info("----------------------------------------");
 
 		player.setAllowFlight(false);
