@@ -14,7 +14,7 @@ public class ArmorSerializationUtil {
     public static String serializeArmorArray(ItemStack[] armorArray) {
         List<String> serializedItems = new ArrayList<>();
         for (ItemStack armor: armorArray) {
-            String armorSerialized = ItemMetaAdapter.serialize(armor);
+            String armorSerialized = ItemMetaAdapter.serialize(armor).replace("\\", "");
             serializedItems.add(armorSerialized);
         }
         Gson gson = new Gson();

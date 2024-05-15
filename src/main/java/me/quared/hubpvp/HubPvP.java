@@ -3,6 +3,7 @@ package me.quared.hubpvp;
 import me.quared.hubpvp.commands.HubPvPCommand;
 import me.quared.hubpvp.core.PvPManager;
 import me.quared.hubpvp.listeners.*;
+import me.quared.hubpvp.managers.DatabaseManager;
 import me.quared.hubpvp.util.StringUtil;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,6 +33,7 @@ public final class HubPvP extends JavaPlugin {
 
 		registerListeners();
 		registerCommands();
+		DatabaseManager.initializeDatabase();
 
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();

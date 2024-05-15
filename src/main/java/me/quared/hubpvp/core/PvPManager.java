@@ -90,19 +90,6 @@ public class PvPManager {
 		OldPlayerData oldPlayerData = new OldPlayerData(player.getUniqueId(), player.getInventory().getArmorContents(), player.getAllowFlight());
 		getOldPlayerDataMap().put(player.getUniqueId(), oldPlayerData);
 
-		ItemStack[] armorArray = oldPlayerData.armor();
-
-		String allArmorSerialized = ArmorSerializationUtil.serializeArmorArray(armorArray);
-		ItemStack[] deserializedArmorArray = ArmorSerializationUtil.deserializeArmorArray(allArmorSerialized);
-
-		HubPvP.instance().getLogger().info("----------------------------------------");
-		HubPvP.instance().getLogger().info(allArmorSerialized.replace("\\", ""));
-		HubPvP.instance().getLogger().info("----------------------------------------");
-
-		for (ItemStack armor : deserializedArmorArray) {
-			player.getInventory().addItem(armor);
-		}
-
 		player.setAllowFlight(false);
 		player.getInventory().setHelmet(getHelmet());
 		player.getInventory().setChestplate(getChestplate());
