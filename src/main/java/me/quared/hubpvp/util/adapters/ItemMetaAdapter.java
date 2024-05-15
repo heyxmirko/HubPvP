@@ -109,6 +109,10 @@ public class ItemMetaAdapter {
             }
         }
 
+        if (meta.hasCustomModelData()) {
+            serializedMeta.put("customModelData", meta.getCustomModelData());
+        }
+
         return serializedMeta;
     }
 
@@ -156,6 +160,12 @@ public class ItemMetaAdapter {
 
         if (meta instanceof PotionMeta && serializedMeta.containsKey("potionData")) {
         }
+
+        if (serializedMeta.containsKey("customModelData")) {
+            meta.setCustomModelData(((Number) serializedMeta.get("customModelData")).intValue());
+        }
+
+
 
         return meta;
     }
