@@ -13,9 +13,18 @@ public class ArmorSerializationUtil {
 
     public static String serializeArmorArray(ItemStack[] armorArray) {
         List<String> serializedItems = new ArrayList<>();
-        for (ItemStack armor: armorArray) {
-            String armorSerialized = ItemMetaAdapter.serialize(armor).replace("\\", "");
-            serializedItems.add(armorSerialized);
+        for (ItemStack armor : armorArray) {
+            if (armor == null) {
+                serializedItems.add(null);
+            } else {
+                String armorSerialized = ItemMetaAdapter.serialize(armor);
+                if (armorSerialized != null) {
+                    armorSerialized = armorSerialized.replace("\\", "");
+                    serializedItems.add(armorSerialized);
+                } else {
+                    serializedItems.add(null);
+                }
+            }
         }
         Gson gson = new Gson();
         return gson.toJson(serializedItems);
@@ -28,7 +37,12 @@ public class ArmorSerializationUtil {
         ItemStack[] armorArray = new ItemStack[serializedItems.size()];
 
         for (int i = 0; i < serializedItems.size(); i++) {
-            armorArray[i] = ItemMetaAdapter.deserialize(serializedItems.get(i));
+            String serializedItem = serializedItems.get(i);
+            if (serializedItem != null) {
+                armorArray[i] = ItemMetaAdapter.deserialize(serializedItem);
+            } else {
+                armorArray[i] = null;
+            }
         }
         return armorArray;
     }

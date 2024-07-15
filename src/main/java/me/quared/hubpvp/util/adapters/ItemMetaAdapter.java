@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 public class ItemMetaAdapter {
 
     public static String serialize(ItemStack item) {
-        if (item == null) return null;
+        if (item == null) return "null";
 
         Map<String, Object> serializedItem = new HashMap<>();
         serializedItem.put("type", item.getType().name());
@@ -39,7 +39,7 @@ public class ItemMetaAdapter {
     }
 
     public static ItemStack deserialize(String json) {
-        if (json == null || json.isEmpty()) return null;
+        if (json == null || json.isEmpty() || json.equals("null")) return null;
 
         Map<String, Object> serializedItem = new Gson().fromJson(json, HashMap.class);
         Material type = Material.valueOf((String) serializedItem.get("type"));
