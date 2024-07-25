@@ -1,10 +1,13 @@
 package me.quared.hubpvp.core;
 
 import me.quared.hubpvp.HubPvP;
+import me.quared.hubpvp.managers.PermissionManager;
 import me.quared.hubpvp.managers.RegionManager;
 import me.quared.hubpvp.util.ArmorSerializationUtil;
 import me.quared.hubpvp.util.StringUtil;
 import me.quared.hubpvp.util.adapters.ItemMetaAdapter;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import nl.marido.deluxecombat.api.DeluxeCombatAPI;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -85,6 +88,7 @@ public class PvPManager {
 
 	public void enablePvP(Player player) {
 		setPlayerState(player, PvPState.ON);
+		PermissionManager.assignPermission(player, "duels.duel", false);
 
 		if (getOldPlayerDataFromMap(player) != null) getOldPlayerDataMap().remove(player.getUniqueId());
 		OldPlayerData oldPlayerData = new OldPlayerData(player.getUniqueId(), player.getInventory().getArmorContents(), player.getAllowFlight());
@@ -107,6 +111,7 @@ public class PvPManager {
 
 	public void disablePvP(Player player) {
 		setPlayerState(player, PvPState.OFF);
+		PermissionManager.assignPermission(player, "duels.duel", true);
 		OldPlayerData oldPlayerData = getOldPlayerDataFromMap(player);
 
 		if (oldPlayerData != null) {

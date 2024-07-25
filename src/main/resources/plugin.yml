@@ -5,7 +5,7 @@ api-version: 1.20
 prefix: HubPvP
 authors: [ Quared ]
 description: HubPvP plugin - A sword that players can PvP each other with in the hub!
-depend: [WorldGuard, DeluxeCombat, CMILib]
+depend: [WorldGuard, DeluxeCombat, CMILib, LuckPerms]
 commands:
   hubpvp:
     description: HubPvP core command.
