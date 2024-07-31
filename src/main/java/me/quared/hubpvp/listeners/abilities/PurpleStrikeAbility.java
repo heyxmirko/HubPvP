@@ -1,4 +1,4 @@
-package me.quared.hubpvp.listeners;
+package me.quared.hubpvp.listeners.abilities;
 
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.core.PvPManager;
@@ -8,8 +8,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -21,20 +19,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class SpellCastListener implements Listener {
+public class PurpleStrikeAbility implements Ability {
 
-    JavaPlugin plugin = JavaPlugin.getPlugin(HubPvP.class);
+    private final JavaPlugin plugin = JavaPlugin.getPlugin(HubPvP.class);
 
     List<Material> noCollisionBlocks = new ArrayList<>();
 
-    public SpellCastListener() {
+    public PurpleStrikeAbility() {
         noCollisionBlocks.add(Material.AIR);
         noCollisionBlocks.add(Material.WATER);
         noCollisionBlocks.add(Material.LIGHT);
     }
 
-    @EventHandler
-    public void onSpellCast(PlayerInteractEvent e) {
+    @Override
+    public void cast(PlayerInteractEvent e) {
         Player player = e.getPlayer();
         if (!isPlayerInPvPAndHoldingCorrectWeapon(player, e.getItem())) {
             return;
@@ -206,5 +204,10 @@ public class SpellCastListener implements Listener {
         double deltaY = playerLocation.getY() - blockLocation.getY(); // Check if block is directly below
 
         return deltaX <= radius && deltaZ <= radius && deltaY > 0 && deltaY <= 3; // Within radius and directly below within 3 blocks
+    }
+
+    @Override
+    public int getCooldown() {
+        return 200; // Example cooldown, adjust as needed
     }
 }
