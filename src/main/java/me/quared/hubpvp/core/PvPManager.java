@@ -112,6 +112,8 @@ public class PvPManager {
 		}
 
 		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-enabled")));
+		// to change abilities press F
+		player.sendMessage(StringUtil.colorize("&7Press &l[&9&lF&7&l] &7to change abilities"));
 		player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 2.0F);
 		player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1.0F, 1.0F);
 		if (!selectedAbilities.containsKey(player.getUniqueId())) {
