@@ -64,7 +64,7 @@ public class HealAbility implements Ability {
         if (meta != null) {
             meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&2&lInstant Heal"));
             List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.translateAlternateColorCodes('&', "&7Heals you for 4 hearts"));
+            lore.add(ChatColor.translateAlternateColorCodes('&', "&7Heals you for 4 hearts."));
             lore.add(ChatColor.translateAlternateColorCodes('&', ""));
             lore.add(ChatColor.translateAlternateColorCodes('&', "&7Cooldown: &2&l30s"));
             meta.setLore(lore);

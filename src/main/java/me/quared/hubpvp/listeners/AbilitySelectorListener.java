@@ -1,5 +1,6 @@
 package me.quared.hubpvp.listeners;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.core.PvPManager;
 import me.quared.hubpvp.listeners.abilities.*;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class AbilitySelectorListener implements Listener {
 
-    private final String ABILITY_SELECTOR_GUI_TITLE = StringUtil.colorize("&0> &#9F08FB&lS&#9316FB&le&#8724FC&ll&#7A33FC&le&#6E41FC&lc&#624FFD&lt &#496CFD&lA&#3D7AFD&lb&#3188FE&li&#2596FE&ll&#18A5FE&li&#0CB3FF&lt&#00C1FF&ly &0< &r&lBETA");
+    private final String ABILITY_SELECTOR_GUI_TITLE = "%tab_replace_luckperms_inherits_permission_resourcepack.pvpsword_abilities%";
     private List<Ability> abilities;
 
     public AbilitySelectorListener() {
@@ -82,7 +83,7 @@ public class AbilitySelectorListener implements Listener {
     }
 
     private void openAbilitySelectorGUI(Player player) {
-        Inventory gui = Bukkit.createInventory(null, 27, ABILITY_SELECTOR_GUI_TITLE);
+        Inventory gui = Bukkit.createInventory(null, 36, PlaceholderAPI.setPlaceholders(player, ABILITY_SELECTOR_GUI_TITLE));
 
         // Add ability icons to the GUI
         int slot = 10;
@@ -91,30 +92,30 @@ public class AbilitySelectorListener implements Listener {
             if (slot >= gui.getSize()) break;  // Prevents adding more items than the inventory size
         }
 
-        // Create black glass pane item
-        ItemStack blackPane = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
-        ItemMeta paneMeta = blackPane.getItemMeta();
-        if (paneMeta != null) {
-            paneMeta.setDisplayName(" ");  // Set an empty display name
-            blackPane.setItemMeta(paneMeta);
-        }
-
-        // Fill remaining slots with black glass panes
-        for (int i = 0; i < gui.getSize(); i++) {
-            if (gui.getItem(i) == null || gui.getItem(i).getType() == Material.AIR) {
-                gui.setItem(i, blackPane);
-            }
-        }
+//        // Create black glass pane item
+//        ItemStack blackPane = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+//        ItemMeta paneMeta = blackPane.getItemMeta();
+//        if (paneMeta != null) {
+//            paneMeta.setDisplayName(" ");  // Set an empty display name
+//            blackPane.setItemMeta(paneMeta);
+//        }
+//
+//        // Fill remaining slots with black glass panes
+//        for (int i = 0; i < gui.getSize(); i++) {
+//            if (gui.getItem(i) == null || gui.getItem(i).getType() == Material.AIR) {
+//                gui.setItem(i, blackPane);
+//            }
+//        }
 
         player.openInventory(gui);
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getView().getTitle().equals(ABILITY_SELECTOR_GUI_TITLE)) {
+        Player player = (Player) e.getWhoClicked();
+        if (e.getView().getTitle().equals(PlaceholderAPI.setPlaceholders(player, ABILITY_SELECTOR_GUI_TITLE))) {
             e.setCancelled(true);  // Prevent the player from taking items
 
-            Player player = (Player) e.getWhoClicked();
             ItemStack clickedItem = e.getCurrentItem();
 
             if (clickedItem != null && clickedItem.hasItemMeta()) {

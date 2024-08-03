@@ -102,7 +102,7 @@ public class IceShardAbility implements Ability {
             List<String> lore = new ArrayList<>();
             lore.add(ChatColor.translateAlternateColorCodes('&', "&7Shoots a shard of ice"));
             lore.add(ChatColor.translateAlternateColorCodes('&', "&7Deals damage and slows enemies"));
-            lore.add(ChatColor.translateAlternateColorCodes('&', "&7in its path"));
+            lore.add(ChatColor.translateAlternateColorCodes('&', "&7in its path."));
             lore.add(ChatColor.translateAlternateColorCodes('&', ""));
             lore.add(ChatColor.translateAlternateColorCodes('&', "&7Cooldown: &b&l10s"));
             meta.setLore(lore);

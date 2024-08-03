@@ -6,6 +6,7 @@ prefix: HubPvP
 authors: [ Quared ]
 description: HubPvP plugin - A sword that players can PvP each other with in the hub!
 depend: [WorldGuard, DeluxeCombat, CMILib, LuckPerms]
+softdepend: [PlaceholderAPI]
 commands:
   hubpvp:
     description: HubPvP core command.
