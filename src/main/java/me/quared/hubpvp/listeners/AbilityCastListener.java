@@ -17,9 +17,6 @@ import me.quared.hubpvp.listeners.abilities.Ability;
 public class AbilityCastListener implements Listener {
 
     private JavaPlugin plugin = JavaPlugin.getPlugin(HubPvP.class);
-
-    private Ability hardcodedAbility = new PurpleStrikeAbility(); // Hardcoded ability
-
     @EventHandler
     public void onAbilityCast(PlayerInteractEvent e) {
         Player player = e.getPlayer();
@@ -36,8 +33,15 @@ public class AbilityCastListener implements Listener {
                 return;
             }
 
-            hardcodedAbility.cast(e);
-            player.setCooldown(item.getType(), hardcodedAbility.getCooldown());
+            Ability selectedAbility = HubPvP.instance().pvpManager().getSelectedAbilities().get(player.getUniqueId());
+            if (selectedAbility == null) {
+                selectedAbility = new PurpleStrikeAbility();
+            }
+            selectedAbility.cast(e);
+            int cooldown = selectedAbility.getCooldown();
+            if (cooldown > 0) {
+                player.setCooldown(item.getType(), cooldown);
+            }
         }
     }
 

@@ -55,18 +55,6 @@ public class ProtectionListeners implements Listener {
 	}
 
 	@EventHandler
-	public void swapHandItems(PlayerSwapHandItemsEvent event) {
-		ItemStack mainHandItem = event.getOffHandItem();
-		if (mainHandItem == null) return;
-		if (mainHandItem.getType() != pvpManager.getWeapon().getType()) return;
-		if (!mainHandItem.hasItemMeta()) return;
-		if (!mainHandItem.getItemMeta().hasCustomModelData()) return;
-		if (mainHandItem.getItemMeta().getCustomModelData() == pvpManager.getWeapon().getItemMeta().getCustomModelData()) {
-			pvpManager.disablePvP(event.getPlayer());
-		}
-	}
-
-	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		if (!(event.getWhoClicked() instanceof Player)) return;
 

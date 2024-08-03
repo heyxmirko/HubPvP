@@ -10,7 +10,9 @@ import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -34,10 +36,6 @@ public class PurpleStrikeAbility implements Ability {
     @Override
     public void cast(PlayerInteractEvent e) {
         Player player = e.getPlayer();
-        if (!isPlayerInPvPAndHoldingCorrectWeapon(player, e.getItem())) {
-            return;
-        }
-
         Action action = e.getAction();
         if (action == Action.RIGHT_CLICK_AIR) {
             handleAirRightClick(player);
@@ -65,7 +63,6 @@ public class PurpleStrikeAbility implements Ability {
             return;
         }
         castSpell(player);
-        player.setCooldown(Material.DIAMOND_SWORD, 200);
     }
 
     private boolean isCorrectBlockClicked(Block clickedBlock, Player player) {
@@ -78,12 +75,6 @@ public class PurpleStrikeAbility implements Ability {
             return;
         }
         launchPlayerInAir(player);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                player.setCooldown(Material.DIAMOND_SWORD, 100);
-            }
-        }.runTaskLater(HubPvP.instance(), 20L);
     }
 
     public void castSpell(Player player) {
@@ -209,5 +200,24 @@ public class PurpleStrikeAbility implements Ability {
     @Override
     public int getCooldown() {
         return 200; // Example cooldown, adjust as needed
+    }
+
+    @Override
+    public ItemStack getIcon() {
+        ItemStack icon = new ItemStack(Material.DIAMOND_SWORD);
+        ItemMeta meta = icon.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&5&lPurple Strike"));
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.translateAlternateColorCodes('&', "&7Casts a beam that damages and"));
+            lore.add(ChatColor.translateAlternateColorCodes('&', "&7knocks back enemies in it's path."));
+            lore.add(ChatColor.translateAlternateColorCodes('&', "&7Can also launch you into the air"));
+            lore.add(ChatColor.translateAlternateColorCodes('&', "&7when clicking beneath yourself."));
+            lore.add(ChatColor.translateAlternateColorCodes('&', ""));
+            lore.add(ChatColor.translateAlternateColorCodes('&', "&7Cooldown: &5&l20s"));
+            meta.setLore(lore);
+            icon.setItemMeta(meta);
+        }
+        return icon;
     }
 }

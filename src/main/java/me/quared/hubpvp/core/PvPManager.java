@@ -1,6 +1,7 @@
 package me.quared.hubpvp.core;
 
 import me.quared.hubpvp.HubPvP;
+import me.quared.hubpvp.listeners.abilities.Ability;
 import me.quared.hubpvp.managers.PermissionManager;
 import me.quared.hubpvp.managers.RegionManager;
 import me.quared.hubpvp.util.ArmorSerializationUtil;
@@ -8,6 +9,9 @@ import me.quared.hubpvp.util.StringUtil;
 import me.quared.hubpvp.util.adapters.ItemMetaAdapter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import nl.marido.deluxecombat.api.DeluxeCombatAPI;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -20,7 +24,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class PvPManager {
 
@@ -33,7 +39,7 @@ public class PvPManager {
 		return this.oldPlayerDataMap;
 	}
 	private ItemStack weapon, helmet, chestplate, leggings, boots;
-
+	private Map<UUID, Ability> selectedAbilities;
 
 	// Constructor
 	public PvPManager() {
@@ -42,6 +48,7 @@ public class PvPManager {
 		currentTimers = new HashMap<>();
 		oldPlayerDataMap = new HashMap<>();
 		this.deluxeCombatAPI = new DeluxeCombatAPI();
+		this.selectedAbilities = new HashMap<>();
 		loadItemsFromConfig();
 	}
 
@@ -107,6 +114,10 @@ public class PvPManager {
 		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-enabled")));
 		player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 2.0F);
 		player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_LEATHER, 1.0F, 1.0F);
+		if (!selectedAbilities.containsKey(player.getUniqueId())) {
+			this.setSelectedAbilities(player.getUniqueId(), Ability.getDefaultAbility());
+		}
+		player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(StringUtil.colorize("Selected Ability: " + selectedAbilities.get(player.getUniqueId()).getIcon().getItemMeta().getDisplayName())));
 	}
 
 	public void disablePvP(Player player) {
@@ -217,5 +228,14 @@ public class PvPManager {
 		for (Integer slot : slotsToRemove) {
 			inv.clear(slot);
 		}
+	}
+
+
+	public Map<UUID, Ability> getSelectedAbilities() {
+		return selectedAbilities;
+	}
+
+	public void setSelectedAbilities(UUID uniqueId, Ability ability) {
+		selectedAbilities.put(uniqueId, ability);
 	}
 }
